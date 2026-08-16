@@ -35,7 +35,21 @@ app.use((req, res, next) => {
 });
 
 // Non-blocking asynchronous API request logging to MongoDB for analytics
-app.use(requestLogger);
+// Root API Welcome endpoint
+app.get('/', (req, res) => {
+  res.status(HTTP_STATUS.OK).json({
+    success: true,
+    message: 'Distributed API Rate Limiter Backend Service is Live',
+    serverInstance: env.SERVER_INSTANCE_ID,
+    endpoints: {
+      health: '/api/health',
+      analyticsOverview: '/api/analytics/overview',
+      testRateLimit: '/api/test/rate-limit?limit=5&window=30',
+      products: '/api/products',
+    },
+    documentation: 'https://github.com/45Shrikant/distributed-api-rate-limiter',
+  });
+});
 
 // Health check endpoint for load balancers, orchestrators, and sanity checks
 app.get('/api/health', (req, res) => {
