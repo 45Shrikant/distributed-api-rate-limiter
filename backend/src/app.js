@@ -6,6 +6,7 @@ import { env } from './config/env.js';
 import { isRedisConnected } from './config/redis.js';
 import { notFoundHandler, errorHandler } from './middleware/errorMiddleware.js';
 import { HTTP_STATUS } from './utils/constants.js';
+import authRoutes from './routes/authRoutes.js';
 
 const app = express();
 
@@ -47,6 +48,9 @@ app.get('/api/health', (req, res) => {
     },
   });
 });
+
+// API Routes
+app.use('/api/auth', authRoutes);
 
 // Centralized error handling
 app.use(notFoundHandler);
