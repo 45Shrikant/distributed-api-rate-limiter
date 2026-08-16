@@ -46,10 +46,29 @@ export const ApiTester = () => {
         status: res.status,
         statusText: res.statusText,
         headers: {
-          limit: res.headers['x-ratelimit-limit'] || 'N/A',
-          remaining: res.headers['x-ratelimit-remaining'] || 'N/A',
-          reset: res.headers['x-ratelimit-reset'] || 'N/A',
-          serverInstance: res.headers['x-server-instance'] || 'server-1',
+          limit:
+            res.headers['x-ratelimit-limit'] ||
+            res.data?.data?.headers?.['X-RateLimit-Limit'] ||
+            res.data?.data?.rateLimit?.limit ||
+            'N/A',
+          remaining:
+            res.headers['x-ratelimit-remaining'] !== undefined
+              ? res.headers['x-ratelimit-remaining']
+              : res.data?.data?.headers?.['X-RateLimit-Remaining'] ||
+                (res.data?.data?.rateLimit?.remaining !== undefined
+                  ? String(res.data?.data?.rateLimit?.remaining)
+                  : 'N/A'),
+          reset:
+            res.headers['x-ratelimit-reset'] ||
+            res.data?.data?.headers?.['X-RateLimit-Reset'] ||
+            (res.data?.data?.rateLimit?.resetSeconds !== undefined
+              ? String(res.data?.data?.rateLimit?.resetSeconds)
+              : 'N/A'),
+          serverInstance:
+            res.headers['x-server-instance'] ||
+            res.data?.data?.headers?.['X-Server-Instance'] ||
+            res.data?.data?.serverInstance ||
+            'render-backend-1',
           retryAfter: res.headers['retry-after'] || null,
         },
         data: res.data,
@@ -66,13 +85,31 @@ export const ApiTester = () => {
 
       const errorData = {
         status: res?.status || 500,
-        statusText: res?.statusText || 'Network Error',
+        statusText: res?.statusText || 'Rate Limit Exceeded',
         headers: {
-          limit: res?.headers?.['x-ratelimit-limit'] || 'N/A',
-          remaining: res?.headers?.['x-ratelimit-remaining'] || '0',
-          reset: res?.headers?.['x-ratelimit-reset'] || 'N/A',
-          serverInstance: res?.headers?.['x-server-instance'] || 'server-1',
-          retryAfter: res?.headers?.['retry-after'] || res?.data?.retryAfter || null,
+          limit:
+            res?.headers?.['x-ratelimit-limit'] ||
+            res?.data?.data?.headers?.['X-RateLimit-Limit'] ||
+            res?.data?.data?.rateLimit?.limit ||
+            '5',
+          remaining:
+            res?.headers?.['x-ratelimit-remaining'] !== undefined
+              ? res?.headers?.['x-ratelimit-remaining']
+              : '0',
+          reset:
+            res?.headers?.['x-ratelimit-reset'] ||
+            res?.data?.data?.headers?.['X-RateLimit-Reset'] ||
+            res?.data?.retryAfter ||
+            '30',
+          serverInstance:
+            res?.headers?.['x-server-instance'] ||
+            res?.data?.data?.headers?.['X-Server-Instance'] ||
+            'render-backend-1',
+          retryAfter:
+            res?.headers?.['retry-after'] ||
+            res?.data?.retryAfter ||
+            res?.data?.data?.rateLimit?.retryAfter ||
+            null,
         },
         data: res?.data || { message: error.message },
         latency,

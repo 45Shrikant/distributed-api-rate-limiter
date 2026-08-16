@@ -19,8 +19,19 @@ const app = express();
 // Security headers to guard against common web vulnerabilities
 app.use(helmet());
 
-// Enable cross-origin requests for the frontend SPA dashboard
-app.use(cors());
+// Enable cross-origin requests for the frontend SPA dashboard with exposed rate-limit headers
+app.use(
+  cors({
+    origin: '*',
+    exposedHeaders: [
+      'X-RateLimit-Limit',
+      'X-RateLimit-Remaining',
+      'X-RateLimit-Reset',
+      'X-Server-Instance',
+      'Retry-After',
+    ],
+  })
+);
 
 // Parse incoming JSON payloads
 app.use(express.json());

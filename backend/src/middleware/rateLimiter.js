@@ -20,30 +20,26 @@ export const rateLimiter = (options = {}) => {
   } = options;
 
   return async (req, res, next) => {
-    try {
-      // 1. Determine baseline limit and config key
-      let fallbackLimit = explicitLimit;
-      let fallbackWindow = explicitWindowSeconds;
-      let configKey = null;
+      // 1. Determine rate limit: respect explicitLimit if passed (e.g. test route), otherwise resolve dynamic tier/override
+      let limit = explicitLimit;
+      let windowSeconds = explicitWindowSeconds;
 
-      if (!fallbackLimit) {
+      if (!limit) {
+        let configKey = null;
+        if (endpointSpecific) {
+          const rawPath = req.baseUrl ? `${req.baseUrl}${req.path}` : req.path;
+          configKey = (rawPath || req.originalUrl || '/').split('?')[0].replace(/\/+$/, '') || '/';
+        }
+
         const plan = req.user?.plan || USER_PLANS.FREE;
         const planConfig = PLAN_RATE_LIMITS[plan] || PLAN_RATE_LIMITS[USER_PLANS.FREE];
-        fallbackLimit = planConfig.limit;
-        fallbackWindow = planConfig.windowSeconds;
-        configKey = plan;
-      } else if (endpointSpecific) {
-        const rawPath = req.baseUrl ? `${req.baseUrl}${req.path}` : req.path;
-        configKey = (rawPath || req.originalUrl || '/').split('?')[0].replace(/\/+$/, '') || '/';
+        const fallbackLimit = planConfig.limit;
+        const fallbackWindow = planConfig.windowSeconds;
+
+        const effective = await getEffectiveRateLimit(configKey || plan, fallbackLimit, fallbackWindow);
+        limit = effective.limit;
+        windowSeconds = effective.windowSeconds;
       }
-
-      // 2. Query dynamic override (cached in Redis / persisted in MongoDB)
-      const effective = configKey
-        ? await getEffectiveRateLimit(configKey, fallbackLimit, fallbackWindow)
-        : { limit: fallbackLimit, windowSeconds: fallbackWindow };
-
-      const limit = effective.limit;
-      const windowSeconds = effective.windowSeconds;
 
       // 3. Generate Redis subject key (e.g. rate_limit:user:123:/api/products or rate_limit:ip:127.0.0.1:/api/auth/login)
       const { key, subjectType, subjectId } = getClientIdentifier(req, { endpointSpecific });
