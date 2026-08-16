@@ -1,0 +1,37 @@
+{
+  "name": "distributed-rate-limiter-backend",
+  "version": "1.0.0",
+  "description": "Production-style Distributed API Rate Limiter & Analytics Backend in Node.js, Express, Redis, and MongoDB",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "rate-limiter",
+    "redis",
+    "distributed-systems",
+    "express",
+    "system-design",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "helmet": "^8.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.9.5",
+    "redis": "^4.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9",
+    "supertest": "^7.0.0",
+    "vitest": "^3.0.4"
+  }
+}
