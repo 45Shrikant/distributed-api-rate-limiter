@@ -1,7 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import mongoose from 'mongoose';
 import { env } from './config/env.js';
+import { isRedisConnected } from './config/redis.js';
 import { notFoundHandler, errorHandler } from './middleware/errorMiddleware.js';
 import { HTTP_STATUS } from './utils/constants.js';
 
@@ -27,6 +29,9 @@ app.use((req, res, next) => {
 
 // Health check endpoint for load balancers, orchestrators, and sanity checks
 app.get('/api/health', (req, res) => {
+  const mongoReady = mongoose.connection.readyState === 1;
+  const redisReady = isRedisConnected();
+
   res.status(HTTP_STATUS.OK).json({
     success: true,
     data: {
@@ -34,6 +39,11 @@ app.get('/api/health', (req, res) => {
       serverInstance: env.SERVER_INSTANCE_ID,
       timestamp: new Date().toISOString(),
       uptimeSeconds: Math.floor(process.uptime()),
+      services: {
+        mongodb: mongoReady ? 'connected' : 'disconnected',
+        redis: redisReady ? 'connected' : 'disconnected',
+        rateLimitFailMode: env.RATE_LIMIT_FAIL_MODE,
+      },
     },
   });
 });

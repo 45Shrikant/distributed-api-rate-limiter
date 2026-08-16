@@ -1,11 +1,15 @@
 import app from './app.js';
 import { env } from './config/env.js';
 import { connectDB, disconnectDB } from './config/db.js';
+import { connectRedis, disconnectRedis } from './config/redis.js';
 
-// Starts the HTTP server, connects to databases, and logs runtime configuration
+// Starts the HTTP server, connects to databases & caches, and logs runtime configuration
 const startServer = async () => {
   // Initialize persistent database connection
   await connectDB();
+
+  // Initialize distributed in-memory cache & rate limiter store
+  await connectRedis();
 
   const server = app.listen(env.PORT, () => {
     console.log(`=========================================`);
@@ -17,12 +21,13 @@ const startServer = async () => {
     console.log(`=========================================`);
   });
 
-  // Graceful shutdown ensures in-flight requests and DB connections are completed before exiting
+  // Graceful shutdown ensures in-flight requests, DB, and Redis connections are completed before exiting
   const shutdown = async (signal) => {
     console.log(`Received ${signal}. Shutting down gracefully...`);
     server.close(async () => {
       console.log('HTTP server closed.');
       await disconnectDB();
+      await disconnectRedis();
       process.exit(0);
     });
   };
