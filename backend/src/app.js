@@ -7,6 +7,9 @@ import { isRedisConnected } from './config/redis.js';
 import { notFoundHandler, errorHandler } from './middleware/errorMiddleware.js';
 import { HTTP_STATUS } from './utils/constants.js';
 import authRoutes from './routes/authRoutes.js';
+import apiRoutes from './routes/apiRoutes.js';
+import userRoutes from './routes/userRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 const app = express();
 
@@ -51,6 +54,9 @@ app.get('/api/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/products', apiRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Centralized error handling
 app.use(notFoundHandler);
