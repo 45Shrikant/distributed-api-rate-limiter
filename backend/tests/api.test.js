@@ -1,10 +1,22 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import request from 'supertest';
 import app from '../src/app.js';
 import { generateToken } from '../src/utils/generateToken.js';
 import { USER_ROLES, USER_PLANS } from '../src/utils/constants.js';
+import * as rateLimiterService from '../src/services/rateLimiter/rateLimiterService.js';
 
 describe('Phase 5 Basic APIs & Role Protected Routes', () => {
+  beforeEach(() => {
+    vi.spyOn(rateLimiterService, 'checkLimit').mockResolvedValue({
+      allowed: true,
+      current: 1,
+      limit: 100,
+      remaining: 99,
+      resetSeconds: 60,
+      retryAfter: 0,
+      algorithm: 'fixed_window',
+    });
+  });
   const userToken = generateToken({
     userId: '64b8f0f4e13e4b001a2b3c4d',
     role: USER_ROLES.USER,
