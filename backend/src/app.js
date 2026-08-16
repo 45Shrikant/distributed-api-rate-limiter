@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import { env } from './config/env.js';
 import { isRedisConnected } from './config/redis.js';
 import { notFoundHandler, errorHandler } from './middleware/errorMiddleware.js';
+import { requestLogger } from './middleware/requestLogger.js';
 import { HTTP_STATUS } from './utils/constants.js';
 import authRoutes from './routes/authRoutes.js';
 import apiRoutes from './routes/apiRoutes.js';
@@ -31,6 +32,9 @@ app.use((req, res, next) => {
   res.setHeader('X-Server-Instance', env.SERVER_INSTANCE_ID);
   next();
 });
+
+// Non-blocking asynchronous API request logging to MongoDB for analytics
+app.use(requestLogger);
 
 // Health check endpoint for load balancers, orchestrators, and sanity checks
 app.get('/api/health', (req, res) => {
