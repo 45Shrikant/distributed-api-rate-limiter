@@ -1,0 +1,16 @@
+{
+  "name": "distributed-rate-limiter-load-test",
+  "version": "1.0.0",
+  "description": "High-throughput load testing scripts for Distributed API Rate Limiter",
+  "type": "module",
+  "main": "rate-limit-test.js",
+  "scripts": {
+    "test:100": "node rate-limit-test.js --requests=100 --connections=10",
+    "test:500": "node rate-limit-test.js --requests=500 --connections=25",
+    "test:1000": "node rate-limit-test.js --requests=1000 --connections=50",
+    "test:burst": "node rate-limit-test.js --requests=300 --connections=50 --limit=20 --window=30"
+  },
+  "dependencies": {
+    "autocannon": "^7.15.0"
+  }
+}
