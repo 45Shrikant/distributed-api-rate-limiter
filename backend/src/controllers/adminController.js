@@ -2,7 +2,8 @@ import mongoose from 'mongoose';
 import User from '../models/User.js';
 import ApiRequest from '../models/ApiRequest.js';
 import RateLimitConfig from '../models/RateLimitConfig.js';
-import { HTTP_STATUS, PLAN_RATE_LIMITS, ENDPOINT_RATE_LIMITS } from '../utils/constants.js';
+import { invalidateRateLimitCache } from '../services/configService.js';
+import { HTTP_STATUS, PLAN_RATE_LIMITS, ENDPOINT_RATE_LIMITS, USER_PLANS } from '../utils/constants.js';
 
 // Returns paginated list of registered users and their current subscription tiers
 export const getUsers = async (req, res, next) => {
@@ -33,6 +34,36 @@ export const getUsers = async (req, res, next) => {
   }
 };
 
+// Updates a user's subscription plan tier (free <-> premium)
+export const updateUserPlan = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { plan } = req.body;
+
+    if (!Object.values(USER_PLANS).includes(plan)) {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
+        success: false,
+        message: `Invalid plan. Must be one of: [${Object.values(USER_PLANS).join(', ')}]`,
+      });
+    }
+
+    const user = await User.findByIdAndUpdate(id, { plan }, { new: true });
+    if (!user) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      data: { user: user.toJSON() },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Returns current rate-limit configurations (database dynamic overrides + hardcoded fallback defaults)
 export const getRateLimits = async (req, res, next) => {
   try {
@@ -56,7 +87,7 @@ export const getRateLimits = async (req, res, next) => {
   }
 };
 
-// Creates or updates a dynamic rate-limit override in MongoDB
+// Creates or updates a dynamic rate-limit override in MongoDB and invalidates Redis cache
 export const updateRateLimit = async (req, res, next) => {
   try {
     const { id } = req.params; // Can be MongoDB _id or key name
@@ -85,6 +116,9 @@ export const updateRateLimit = async (req, res, next) => {
       runValidators: true,
     });
 
+    // Invalidate Redis cache so all cluster nodes immediately pick up the new quota
+    await invalidateRateLimitCache(config.key);
+
     res.status(HTTP_STATUS.OK).json({
       success: true,
       data: { config },
@@ -94,16 +128,39 @@ export const updateRateLimit = async (req, res, next) => {
   }
 };
 
+// Deletes a dynamic rate-limit override (falling back to hardcoded defaults)
+export const deleteRateLimit = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const filter = id.match(/^[0-9a-fA-F]{24}$/) ? { _id: id } : { key: id };
+
+    const config = await RateLimitConfig.findOneAndDelete(filter);
+    if (config) {
+      await invalidateRateLimitCache(config.key);
+    }
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Rate limit override removed. Reverted to default threshold.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 // Aggregates high-level admin metrics
 export const getAdminAnalytics = async (req, res, next) => {
   try {
-    const [totalUsers, freeUsers, premiumUsers, totalRequests, blockedRequests] = await Promise.all([
-      User.countDocuments(),
-      User.countDocuments({ plan: 'free' }),
-      User.countDocuments({ plan: 'premium' }),
-      ApiRequest.countDocuments(),
-      ApiRequest.countDocuments({ rateLimited: true }),
-    ]);
+    const isConnected = mongoose.connection.readyState === 1;
+    const [totalUsers, freeUsers, premiumUsers, totalRequests, blockedRequests] = isConnected
+      ? await Promise.all([
+          User.countDocuments(),
+          User.countDocuments({ plan: 'free' }),
+          User.countDocuments({ plan: 'premium' }),
+          ApiRequest.countDocuments(),
+          ApiRequest.countDocuments({ rateLimited: true }),
+        ])
+      : [0, 0, 0, 0, 0];
 
     res.status(HTTP_STATUS.OK).json({
       success: true,
