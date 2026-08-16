@@ -52,14 +52,14 @@ export const rateLimiter = (options = {}) => {
 
       // 5. Inject standard IETF rate-limit response headers
       if (result.limit !== Infinity) {
-        res.setHeader('X-RateLimit-Limit', result.limit);
-        res.setHeader('X-RateLimit-Remaining', result.remaining);
-        res.setHeader('X-RateLimit-Reset', result.resetSeconds);
+        res.setHeader('X-RateLimit-Limit', String(result.limit));
+        res.setHeader('X-RateLimit-Remaining', String(result.remaining));
+        res.setHeader('X-RateLimit-Reset', String(result.resetSeconds));
       }
 
       // 6. Handle rate-limit violations
       if (!result.allowed) {
-        res.setHeader('Retry-After', result.retryAfter);
+        res.setHeader('Retry-After', String(result.retryAfter));
         return res.status(HTTP_STATUS.TOO_MANY_REQUESTS).json({
           success: false,
           message: 'Too many requests',
