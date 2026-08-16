@@ -15,16 +15,9 @@ export const connectRedis = async () => {
   redisClient = createClient({
     url: env.REDIS_URL,
     socket: {
-      reconnectStrategy: (retries) => {
-        if (retries > 10) {
-          console.warn('[Redis] Max reconnection attempts reached. Continuing in degraded state...');
-          return false; // Stop retrying after 10 attempts
-        }
-        // Exponential backoff with jitter
-        const delay = Math.min(retries * 500, 3000);
-        return delay;
-      },
-      connectTimeout: 5000,
+      reconnectStrategy: (retries) => Math.min(retries * 200, 3000),
+      keepAlive: 5000,
+      connectTimeout: 10000,
     },
   });
 

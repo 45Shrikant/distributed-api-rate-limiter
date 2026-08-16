@@ -1,8 +1,12 @@
 import axios from 'axios';
 
-// Create configured Axios instance for API interactions
+// Resolve API base URL dynamically for local dev, reverse proxy, or cloud production
+const apiBase = import.meta.env.VITE_API_URL
+  ? `${import.meta.env.VITE_API_URL.replace(/\/+$/, '')}/api`
+  : '/api';
+
 export const api = axios.create({
-  baseURL: '/api',
+  baseURL: apiBase,
   headers: {
     'Content-Type': 'application/json',
   },

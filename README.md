@@ -210,6 +210,21 @@ npm run test:1000
 
 ---
 
+---
+
+## ☁️ Cloud Deployment (Vercel, Render, Railway, Upstash)
+
+This project is pre-configured for one-click deployment across free modern cloud services:
+- **Frontend SPA**: Deploy directly on **Vercel** (`frontend/vercel.json` included).
+- **Backend API**: Deploy as **Vercel Serverless Function** (`backend/api/index.js` + `vercel.json`) or as a container on **Render / Railway / Fly.io**.
+- **Distributed Redis**: Connect to **[Upstash Redis](https://upstash.com/)** (Free Serverless Redis).
+- **MongoDB Database**: Connect to **[MongoDB Atlas](https://www.mongodb.com/cloud/atlas)** (Free M0 Shared Tier).
+
+For the complete step-by-step tutorial, check the **[Cloud Deployment Guide](docs/deployment-guide.md)**.
+
+---
+
 ## 📖 Deep Dive System Design Documentation
 
 For a comprehensive architectural breakdown, including race-condition analysis, algorithm trade-offs, and system design interview questions, read [`docs/system-design.md`](docs/system-design.md).
+
