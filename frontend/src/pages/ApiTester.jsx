@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import api from '../services/api.js';
-import { Play, Zap, Server, Shield, Clock, AlertOctagon, CheckCircle, ArrowRight, Code2, RefreshCw } from 'lucide-react';
+import { Play, Zap, AlertOctagon, Code2 } from 'lucide-react';
 
 const PRESET_ENDPOINTS = [
   { label: 'Test Rate Limiter (Limit: 5 req / 30s)', path: '/test/rate-limit?limit=5&window=30', method: 'GET' },
@@ -141,39 +141,33 @@ export const ApiTester = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-900/60 p-6 rounded-3xl border border-slate-800 backdrop-blur-md">
-        <div className="flex items-center gap-2 mb-1">
-          <Zap className="w-4 h-4 text-emerald-400" />
-          <span className="text-xs font-mono uppercase tracking-wider text-emerald-400 font-semibold">
-            Interactive Rate Limit Playground
-          </span>
-        </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-          Live API Request & Rate Limit Tester
+      <div className="p-5 rounded-xl bg-slate-900 border border-slate-800">
+        <h1 className="text-xl font-bold text-white tracking-tight">
+          API Request & Rate Limit Tester
         </h1>
-        <p className="text-sm text-slate-400 mt-1">
-          Dispatch requests to test IP/User quotas, trigger rapid burst thresholds, and inspect response headers.
+        <p className="text-xs text-slate-400 mt-0.5">
+          Dispatch requests to test IP/User quotas, trigger bursts, and inspect response headers.
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Request Dispatcher Form (Left Column) */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 backdrop-blur-sm space-y-5">
-            <h3 className="text-base font-bold text-white flex items-center gap-2">
-              <Code2 className="w-5 h-5 text-cyan-400" />
+        <div className="lg:col-span-5 space-y-5">
+          <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-4">
+            <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+              <Code2 className="w-4 h-4 text-slate-400" />
               Configure Request
             </h3>
 
             {/* Presets */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              <label className="block text-xs font-medium text-slate-400 mb-1.5">
                 Preset Endpoint
               </label>
               <select
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-slate-600"
                 value={selectedEndpoint}
                 onChange={(e) => {
                   setSelectedEndpoint(e.target.value);
@@ -192,7 +186,7 @@ export const ApiTester = () => {
             {/* Custom Path & Method */}
             <div className="flex gap-2">
               <select
-                className="bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs font-bold font-mono text-emerald-400 focus:outline-none focus:border-emerald-500"
+                className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2 text-xs font-bold font-mono text-emerald-400 focus:outline-none focus:border-slate-600"
                 value={method}
                 onChange={(e) => setMethod(e.target.value)}
               >
@@ -203,7 +197,7 @@ export const ApiTester = () => {
               </select>
               <input
                 type="text"
-                className="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-emerald-500"
+                className="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-slate-600"
                 value={selectedEndpoint}
                 onChange={(e) => setSelectedEndpoint(e.target.value)}
                 placeholder="/api/..."
@@ -212,7 +206,7 @@ export const ApiTester = () => {
 
             {/* Algorithm Selector */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              <label className="block text-xs font-medium text-slate-400 mb-1.5">
                 Rate Limiter Algorithm Strategy
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -225,9 +219,9 @@ export const ApiTester = () => {
                     key={algo.id}
                     type="button"
                     onClick={() => setAlgorithm(algo.id)}
-                    className={`py-2 px-2 rounded-xl text-xs font-medium border transition-all ${
+                    className={`py-1.5 px-2 rounded-lg text-xs font-medium border transition-colors ${
                       algorithm === algo.id
-                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+                        ? 'bg-slate-800 text-white border-slate-600'
                         : 'bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700'
                     }`}
                   >
@@ -238,21 +232,21 @@ export const ApiTester = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="pt-2 flex flex-col sm:flex-row gap-3">
+            <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
               <button
                 onClick={() => executeRequest()}
                 disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/30 transition-all disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg font-medium text-xs bg-emerald-600 hover:bg-emerald-500 text-white transition-colors disabled:opacity-50"
               >
-                <Play className="w-4 h-4 fill-white" />
-                {loading && !burstProgress ? 'Sending...' : 'Send Single Call'}
+                <Play className="w-3.5 h-3.5 fill-white" />
+                {loading && !burstProgress ? 'Sending...' : 'Send Request'}
               </button>
               <button
                 onClick={() => sendBurst(10)}
                 disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-bold text-sm bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/30 transition-all disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg font-medium text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-colors disabled:opacity-50"
               >
-                <Zap className="w-4 h-4" />
+                <Zap className="w-3.5 h-3.5 text-amber-400" />
                 {burstProgress ? `Bursting (${burstProgress.current}/${burstProgress.total})...` : 'Send Burst (10x)'}
               </button>
             </div>
@@ -260,26 +254,26 @@ export const ApiTester = () => {
         </div>
 
         {/* Live Rate Limit Header Inspector (Right Column) */}
-        <div className="lg:col-span-7 space-y-6">
+        <div className="lg:col-span-7 space-y-5">
           {lastResponse ? (
-            <div className="p-6 rounded-2xl bg-slate-900/70 border border-slate-800 backdrop-blur-sm space-y-6">
+            <div className="p-5 rounded-xl bg-slate-900 border border-slate-800 space-y-5">
               {/* Status Header */}
-              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                 <div className="flex items-center gap-3">
                   <span
-                    className={`text-lg font-mono font-black px-3 py-1 rounded-xl border ${
+                    className={`text-sm font-mono font-bold px-2.5 py-1 rounded-md border ${
                       lastResponse.status === 200 || lastResponse.status === 201
-                        ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
                         : lastResponse.status === 429
-                        ? 'bg-rose-500/20 text-rose-400 border-rose-500/40 animate-pulse'
-                        : 'bg-amber-500/20 text-amber-400 border-amber-500/40'
+                        ? 'bg-rose-500/10 text-rose-400 border-rose-500/20 font-bold'
+                        : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
                     }`}
                   >
                     {lastResponse.status} {lastResponse.statusText}
                   </span>
                   <div>
-                    <p className="text-xs text-slate-400 font-mono">{lastResponse.path}</p>
-                    <p className="text-[11px] text-slate-500 font-mono">{lastResponse.latency}ms round-trip latency</p>
+                    <p className="text-xs text-slate-300 font-mono">{lastResponse.path}</p>
+                    <p className="text-[11px] text-slate-500 font-mono">{lastResponse.latency}ms round-trip</p>
                   </div>
                 </div>
 
@@ -290,12 +284,12 @@ export const ApiTester = () => {
 
               {/* 429 Alert Banner */}
               {lastResponse.status === 429 && (
-                <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-3">
-                  <AlertOctagon className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+                <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-start gap-2.5">
+                  <AlertOctagon className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="text-sm font-bold text-rose-300">Rate Limit Exceeded (HTTP 429)</h4>
+                    <h4 className="text-xs font-semibold text-rose-300">Rate Limit Exceeded (HTTP 429)</h4>
                     <p className="text-xs text-rose-400/90 mt-0.5">
-                      Redis counter crossed the threshold. Client must wait{' '}
+                      Quota reached. Please wait{' '}
                       <strong>{lastResponse.headers.retryAfter || lastResponse.headers.reset} seconds</strong> before retrying.
                     </p>
                   </div>
@@ -304,51 +298,51 @@ export const ApiTester = () => {
 
               {/* Rate Limit Headers Grid */}
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
-                  Parsed Rate-Limit Response Headers
+                <h4 className="text-xs font-medium text-slate-400 mb-2">
+                  Rate Limit Response Headers
                 </h4>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 font-mono text-center">
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-center">
+                  <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
                     <p className="text-[10px] text-slate-400">X-RateLimit-Limit</p>
-                    <p className="text-xl font-bold text-cyan-400 mt-1">{lastResponse.headers.limit}</p>
+                    <p className="text-lg font-bold text-slate-200 mt-0.5">{lastResponse.headers.limit}</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                  <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
                     <p className="text-[10px] text-slate-400">X-RateLimit-Remaining</p>
                     <p
-                      className={`text-xl font-bold mt-1 ${
+                      className={`text-lg font-bold mt-0.5 ${
                         lastResponse.headers.remaining === '0' ? 'text-rose-400' : 'text-emerald-400'
                       }`}
                     >
                       {lastResponse.headers.remaining}
                     </p>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                  <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
                     <p className="text-[10px] text-slate-400">X-RateLimit-Reset</p>
-                    <p className="text-xl font-bold text-amber-400 mt-1">{lastResponse.headers.reset}s</p>
+                    <p className="text-lg font-bold text-slate-200 mt-0.5">{lastResponse.headers.reset}s</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800">
+                  <div className="p-2.5 rounded-lg bg-slate-950 border border-slate-800">
                     <p className="text-[10px] text-slate-400">X-Server-Instance</p>
-                    <p className="text-xl font-bold text-indigo-400 mt-1">{lastResponse.headers.serverInstance}</p>
+                    <p className="text-lg font-bold text-slate-200 mt-0.5">{lastResponse.headers.serverInstance}</p>
                   </div>
                 </div>
               </div>
 
               {/* JSON Payload Viewer */}
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+                <h4 className="text-xs font-medium text-slate-400 mb-1.5">
                   Response Payload
                 </h4>
-                <pre className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-emerald-400 overflow-x-auto max-h-60">
+                <pre className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-mono text-emerald-400 overflow-x-auto max-h-56">
                   {JSON.stringify(lastResponse.data, null, 2)}
                 </pre>
               </div>
             </div>
           ) : (
-            <div className="p-12 rounded-2xl bg-slate-900/40 border border-dashed border-slate-800 flex flex-col items-center justify-center text-center">
-              <Zap className="w-12 h-12 text-slate-700 mb-3" />
-              <h4 className="text-sm font-bold text-slate-300">No requests sent yet</h4>
+            <div className="p-10 rounded-xl bg-slate-900 border border-slate-800 flex flex-col items-center justify-center text-center">
+              <Zap className="w-8 h-8 text-slate-600 mb-2" />
+              <h4 className="text-sm font-medium text-slate-300">No requests sent yet</h4>
               <p className="text-xs text-slate-500 max-w-sm mt-1">
-                Click "Send Single Call" or "Send Burst" to test rate limit quotas and observe live Redis counters.
+                Click "Send Request" or "Send Burst" to test rate limit quotas.
               </p>
             </div>
           )}

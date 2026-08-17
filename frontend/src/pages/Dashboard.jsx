@@ -5,7 +5,7 @@ import StatCard from '../components/StatCard.jsx';
 import { RequestTimeSeriesChart, EndpointBarChart } from '../components/RequestChart.jsx';
 import RateLimitCard from '../components/RateLimitCard.jsx';
 import RequestTable from '../components/RequestTable.jsx';
-import { Activity, ShieldAlert, CheckCircle2, Zap, Clock, RefreshCw, Layers } from 'lucide-react';
+import { Activity, ShieldAlert, CheckCircle2, Clock, RefreshCw } from 'lucide-react';
 
 export const Dashboard = () => {
   const { user, isAuthenticated } = useAuth();
@@ -94,31 +94,25 @@ export const Dashboard = () => {
       : '0';
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-slate-900/90 to-slate-900/60 p-6 rounded-3xl border border-slate-800 backdrop-blur-md">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-xl bg-slate-900 border border-slate-800">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="text-xs font-mono uppercase tracking-wider text-emerald-400 font-semibold">
-              Live Redis Rate Limiter Engine
-            </span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-            System Traffic & Analytics Overview
+          <h1 className="text-xl font-bold text-white tracking-tight">
+            Traffic & Rate Limit Analytics
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
-            Real-time API request monitoring, distributed token quotas, and rate-limit enforcement.
+          <p className="text-xs text-slate-400 mt-0.5">
+            Distributed API rate limiting, active token quotas, and request metrics.
           </p>
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={fetchDashboardData}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-medium border border-slate-700 transition-all shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 transition-colors"
           >
-            <RefreshCw className="w-4 h-4" />
-            Refresh Metrics
+            <RefreshCw className="w-3.5 h-3.5" />
+            Refresh
           </button>
         </div>
       </div>
@@ -128,30 +122,26 @@ export const Dashboard = () => {
         <StatCard
           title="Total API Requests"
           value={overview.totalRequests.toLocaleString()}
-          subtitle="Processed by stateless Express nodes"
+          subtitle="Processed by Express nodes"
           icon={Activity}
-          color="cyan"
         />
         <StatCard
           title="Successful (200 OK)"
           value={overview.successfulRequests.toLocaleString()}
-          subtitle="Passed rate limiter checks"
+          subtitle="Passed rate limiter"
           icon={CheckCircle2}
-          color="emerald"
         />
         <StatCard
           title="Throttled (429 Blocks)"
           value={overview.blockedRequests.toLocaleString()}
-          subtitle={`${blockRate}% total block rate`}
+          subtitle={`${blockRate}% block rate`}
           icon={ShieldAlert}
-          color="rose"
         />
         <StatCard
           title="Avg Latency"
           value={`${overview.averageResponseTime}ms`}
-          subtitle="Redis check + MongoDB logging"
+          subtitle="Redis + Mongo logging"
           icon={Clock}
-          color="indigo"
         />
       </div>
 

@@ -14,11 +14,11 @@ import {
 
 export const RequestTimeSeriesChart = ({ data = [] }) => {
   return (
-    <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-sm">
+    <div className="p-5 rounded-xl bg-slate-900 border border-slate-800">
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-base font-bold text-white">API Traffic & Rate Limit Interceptions</h3>
-          <p className="text-xs text-slate-400">Total requests vs. throttled HTTP 429 blocks over time</p>
+          <h3 className="text-sm font-semibold text-white">API Traffic & Rate Limit Blocks</h3>
+          <p className="text-xs text-slate-400">Total requests vs. throttled HTTP 429 blocks</p>
         </div>
       </div>
       <div className="h-64 w-full">
@@ -29,16 +29,6 @@ export const RequestTimeSeriesChart = ({ data = [] }) => {
         ) : (
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="colorSuccess" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
-                  <stop offset="95%" stopColor="#10b981" stopOpacity={0.0} />
-                </linearGradient>
-                <linearGradient id="colorBlocked" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#ef4444" stopOpacity={0.6} />
-                  <stop offset="95%" stopColor="#ef4444" stopOpacity={0.0} />
-                </linearGradient>
-              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
               <XAxis dataKey="hour" stroke="#64748b" fontSize={11} tickFormatter={(val) => val.split(' ')[1] || val} />
               <YAxis stroke="#64748b" fontSize={11} />
@@ -46,7 +36,7 @@ export const RequestTimeSeriesChart = ({ data = [] }) => {
                 contentStyle={{
                   backgroundColor: '#0f172a',
                   borderColor: '#334155',
-                  borderRadius: '0.75rem',
+                  borderRadius: '0.5rem',
                   fontSize: '12px',
                 }}
               />
@@ -56,18 +46,18 @@ export const RequestTimeSeriesChart = ({ data = [] }) => {
                 dataKey="successful"
                 name="200 OK (Allowed)"
                 stroke="#10b981"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#colorSuccess)"
+                strokeWidth={1.5}
+                fill="#10b981"
+                fillOpacity={0.15}
               />
               <Area
                 type="monotone"
                 dataKey="blocked"
-                name="429 Too Many Requests (Blocked)"
+                name="429 Too Many Requests"
                 stroke="#ef4444"
-                strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#colorBlocked)"
+                strokeWidth={1.5}
+                fill="#ef4444"
+                fillOpacity={0.15}
               />
             </AreaChart>
           </ResponsiveContainer>
@@ -79,10 +69,10 @@ export const RequestTimeSeriesChart = ({ data = [] }) => {
 
 export const EndpointBarChart = ({ data = [] }) => {
   return (
-    <div className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 backdrop-blur-sm">
+    <div className="p-5 rounded-xl bg-slate-900 border border-slate-800">
       <div className="mb-4">
-        <h3 className="text-base font-bold text-white">Requests by Endpoint</h3>
-        <p className="text-xs text-slate-400">Throughput volume and rate-limit distribution across routes</p>
+        <h3 className="text-sm font-semibold text-white">Requests by Endpoint</h3>
+        <p className="text-xs text-slate-400">Traffic volume distribution across endpoints</p>
       </div>
       <div className="h-64 w-full">
         {data.length === 0 ? (
@@ -99,13 +89,13 @@ export const EndpointBarChart = ({ data = [] }) => {
                 contentStyle={{
                   backgroundColor: '#0f172a',
                   borderColor: '#334155',
-                  borderRadius: '0.75rem',
+                  borderRadius: '0.5rem',
                   fontSize: '12px',
                 }}
               />
               <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '8px' }} />
-              <Bar dataKey="successful" name="Successful" fill="#06b6d4" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="blocked" name="Rate-Limited" fill="#f43f5e" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="successful" name="Successful" fill="#0ea5e9" radius={[3, 3, 0, 0]} />
+              <Bar dataKey="blocked" name="Rate-Limited" fill="#f43f5e" radius={[3, 3, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         )}
